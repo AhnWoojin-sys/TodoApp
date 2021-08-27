@@ -28,12 +28,31 @@ app.get('/write', (req, res)=>{
 })
 
 app.get('/list', (req, res)=>{
-    res.render('list.ejs');
+    db.collection('post').find().toArray(function(error, result){
+        res.render('list.ejs', { posts : result })
+    })
+
 })
 
 app.post('/add', (req, res)=>{
-    res.send('success');
-    db.collection('post').insertOne(req.body, (error, result)=>{
-        console.log(result);
-    })
+    db.collection('counter').findOne({name: 'total'}, (error, result)=>{
+        console.log(result.totalPost);
+        var totalPost = result.totalPost;
+
+        db.collection('post').insertOne({
+            _id: (totalPost + 1),
+            todo: req.body.todo,
+            date: req.body.date
+        }, (error, result)=>{
+            db.collection('counter').updateOne({name: 'total'}, { $inc : {totalPost:1} }, (error, result)=>{
+                console.log(result);
+                if(error)return console.log(error);
+            })
+            res.redirect('/list');
+        });
+    });
 })
+
+app.delete('/delete', function(req, res){
+    console.log(req.body);
+});
