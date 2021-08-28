@@ -34,6 +34,10 @@ app.get('/list', (req, res)=>{
 
 })
 
+app.get('/detail/:id', (req, res)=>{
+    res.render('detail.ejs', {});
+})
+
 app.post('/add', (req, res)=>{
     db.collection('counter').findOne({name: 'total'}, (error, result)=>{
         console.log(result.totalPost);
@@ -54,5 +58,10 @@ app.post('/add', (req, res)=>{
 })
 
 app.delete('/delete', function(req, res){
-    console.log(req.body);
+    req.body._id = parseInt(req.body._id);
+    db.collection('post').deleteOne(req.body, (error, result)=>{
+        if(error)console.log(error);
+        res.status(200).send({ message : 'Success'});
+        console.log(result);
+    });
 });

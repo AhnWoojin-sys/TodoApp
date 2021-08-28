@@ -1,19 +1,9 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <title>Document</title>
-    <style>
-        .btn {
-            margin-bottom: 10px;
-        }
-    </style>
 </head>
-
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="/write">TodoApp</a>
@@ -53,40 +43,9 @@
         </div>
     </nav>
 
-    <h4 class="ml-2 my-3">오늘안에 할 수 있을까....?</h4>
-
-    <ul class="list-group">
-        <% for (var i = 0; i < posts.length ; i++){ %>
-        <li class="list-group-item">
-            <h4>Todo name : <%= posts[i].todo%></h4>
-            <p>Todo Finish Date : <%= posts[i].date %></p>
-            <button type="button" id = "delete" data-id="<%= posts[i]._id%>" class="btn btn-primary">Remove</button>
-        </li>
-        <% } %>
-    </ul>
+    <h4 class="ml-2 my-3">상세 페이지</h4>
 
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-
-    <script>
-        $('#delete').click(function (e){
-            var id = e.target.dataset.id;
-            var currentTarget = $(this);
-            console.log(id);
-
-            $.ajax({
-                method: 'DELETE',
-                url: '/delete',
-                data: {
-                    _id: id
-                }
-            }).done((result) => {
-                currentTarget.parent('li').fadeOut();
-            }).fail((xhr, textStatus, errorThrown) => {
-                console.log(xhr, textStatus, errorThrown);
-            })
-        })
-    </script>
-
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
         integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
     </script>
@@ -94,5 +53,4 @@
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
     </script>
 </body>
-
 </html>
