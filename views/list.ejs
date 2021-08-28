@@ -15,60 +15,25 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="/write">TodoApp</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <%- include('nav.html')%>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Dropdown
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-                </li>
-            </ul>
-            <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            </form>
-        </div>
-    </nav>
-
-    <h4 class="ml-2 my-3">오늘안에 할 수 있을까....?</h4>
-
-    <ul class="list-group">
-        <% for (var i = 0; i < posts.length ; i++){ %>
-        <li class="list-group-item">
-            <h4>Todo name : <%= posts[i].todo%></h4>
-            <p>Todo Finish Date : <%= posts[i].date %></p>
-            <button type="button" id = "delete" data-id="<%= posts[i]._id%>" class="btn btn-primary">Remove</button>
-        </li>
-        <% } %>
-    </ul>
-
+    <div class="container">
+        <h4 class="ml-2 my-3 text-center">오늘안에 할 수 있을까....?</h4>
+        <ul class="list-group">
+            <% for (var i = 0; i < posts.length ; i++){ %>
+            <li class="list-group-item">
+                <h4>Todo name : <%=posts[i].todo%></h4>
+                <p>Todo Finish Date : <%=posts[i].date %></p>
+                <a href="/detail/<%=posts[i]._id%>" class="btn btn-primary" role="button">Detail</a>
+                <button type="button" id="delete" data-id="<%= posts[i]._id%>" class="btn btn-danger">Remove</button>
+            </li>
+            <% } %>
+        </ul>
+    </div>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 
     <script>
-        $('#delete').click(function (e){
+        $('#delete').click(function (e) {
             var id = e.target.dataset.id;
             var currentTarget = $(this);
             console.log(id);

@@ -19,12 +19,14 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.set('view engine', 'ejs');
 
+app.use('/public', express.static('public'));
+
 app.get('/', (req, res)=>{
-    res.sendfile(__dirname + '/index.html')
+    res.render('index.ejs');
 })
 
 app.get('/write', (req, res)=>{
-    res.sendFile(__dirname + '/write.html')
+    res.render('write.ejs');
 })
 
 app.get('/list', (req, res)=>{
@@ -35,7 +37,15 @@ app.get('/list', (req, res)=>{
 })
 
 app.get('/detail/:id', (req, res)=>{
-    res.render('detail.ejs', {});
+    db.collection('post').findOne({_id : parseInt(req.params.id)}, (error, result)=>{
+        res.render('detail.ejs', {data : result});
+    })
+})
+
+app.get('/edit/:id', (req, res)=>{
+    db.collection('post').findOne({_id : parseInt(req.params.id)}, (error, result)=>{
+        res.render('edit.ejs', {data : result});
+    })
 })
 
 app.post('/add', (req, res)=>{
@@ -49,7 +59,6 @@ app.post('/add', (req, res)=>{
             date: req.body.date
         }, (error, result)=>{
             db.collection('counter').updateOne({name: 'total'}, { $inc : {totalPost:1} }, (error, result)=>{
-                console.log(result);
                 if(error)return console.log(error);
             })
             res.redirect('/list');
