@@ -1,2 +1,2 @@
 # TodoApp
-TodoApp 개발 
+TodoApp 개발 연습
