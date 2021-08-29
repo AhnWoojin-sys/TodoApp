@@ -20,15 +20,18 @@
 <body>
     <%- include('nav.html')%>
 
-    <div class="container">
-        <form action="/add" method="POST">
+    <h4 class="container mt-4"><strong>글 수정페이지</strong></h4>
+
+    <div class="container mt-3">
+        <form action="/edit?_method=PUT" method="POST">
             <div class="form-group">
+                <input type="text" value="<%= data._id%>" name ="_id" style="display: none;">
                 <label>오늘의 할일</label>
-                <input value="<%= post.todo%>"type="text" class="form-control" name="todo">
+                <input value="<%= data.todo%>"type="text" class="form-control" name="todo">
             </div>
             <div class="form-group">
                 <label>날짜</label>
-                <input value="<%= post.date%>" type="text" class="form-control" name="date">
+                <input value="<%= data.date%>" type="text" class="form-control" name="date">
             </div>
             <button type="submit" class="btn btn-outline-secondary">Submit</button>
         </form>

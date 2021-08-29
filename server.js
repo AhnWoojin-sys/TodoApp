@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const MongoClient = require('mongodb').MongoClient;
+const methodOverride = require('method-override');
 
 MongoClient.connect("mongodb+srv://Ahnwoojin-sys:SwEZHk1TKnlCkWWI@cluster0.wybep.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", 
     function(error, client){
@@ -18,8 +19,8 @@ var db;
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.set('view engine', 'ejs');
-
 app.use('/public', express.static('public'));
+app.use(methodOverride('_method'));
 
 app.get('/', (req, res)=>{
     res.render('index.ejs');
@@ -44,6 +45,7 @@ app.get('/detail/:id', (req, res)=>{
 
 app.get('/edit/:id', (req, res)=>{
     db.collection('post').findOne({_id : parseInt(req.params.id)}, (error, result)=>{
+        if(error) console(error);
         res.render('edit.ejs', {data : result});
     })
 })
@@ -66,7 +68,7 @@ app.post('/add', (req, res)=>{
     });
 })
 
-app.delete('/delete', function(req, res){
+app.delete('/delete', (req, res)=>{
     req.body._id = parseInt(req.body._id);
     db.collection('post').deleteOne(req.body, (error, result)=>{
         if(error)console.log(error);
@@ -74,3 +76,14 @@ app.delete('/delete', function(req, res){
         console.log(result);
     });
 });
+
+app.put('/edit', (req, res)=>{
+    db.collection('post').updateOne({_id: parseInt(req.body._id)}, { $set : {
+        todo: req.body.todo,
+        date: req.body.date
+    }}, (error, result)=>{
+        console.log(req.body)
+        res.redirect('/list');
+    })
+    req.body._id = parseInt(req.body._id);
+})
