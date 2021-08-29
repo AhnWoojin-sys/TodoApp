@@ -2,6 +2,9 @@ const express = require('express');
 const app = express();
 const MongoClient = require('mongodb').MongoClient;
 const methodOverride = require('method-override');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const session = require('express-session');
 
 MongoClient.connect("mongodb+srv://Ahnwoojin-sys:SwEZHk1TKnlCkWWI@cluster0.wybep.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", 
     function(error, client){
@@ -21,6 +24,9 @@ app.use(express.urlencoded({ extended: true }))
 app.set('view engine', 'ejs');
 app.use('/public', express.static('public'));
 app.use(methodOverride('_method'));
+app.use(session({secret: 'secretCode', resave: true, saveUninitialized: false}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.get('/', (req, res)=>{
     res.render('index.ejs');
@@ -68,6 +74,47 @@ app.post('/add', (req, res)=>{
     });
 })
 
+app.get('/login', (req, res)=>{
+    res.render('login.ejs');
+})
+
+app.post('/login', passport.authenticate('local', {
+    failureRedirect : '/fail'
+}), (req, res)=>{
+    res.redirect('/');
+})
+
+app.get('/mypage', checkLogin,(req, res)=>{
+    res.render('mypage.ejs');
+})
+
+passport.use(new LocalStrategy({
+  usernameField: 'id',
+  passwordField: 'pw',
+  session: true,
+  passReqToCallback: false,
+}, function (inputId, inputPw, done) {
+  //console.log(입력한아이디, 입력한비번);
+  db.collection('login').findOne({ id: inputId}, function (error, result) {
+    if (error) return done(error)
+
+    if (!result) return done(null, false, { message: '존재하지 않는 아이디래요' })
+    if (inputPw === result.pw) {
+      return done(null, result)
+    } else {
+      return done(null, false, { message: '비번틀렸어요' })
+    }
+  })
+}));
+
+passport.serializeUser((user, done)=>{
+    done(null, user.id);
+});
+
+passport.deserializeUser((user, done)=>{
+    done(null, {});
+});
+
 app.delete('/delete', (req, res)=>{
     req.body._id = parseInt(req.body._id);
     db.collection('post').deleteOne(req.body, (error, result)=>{
@@ -87,3 +134,11 @@ app.put('/edit', (req, res)=>{
     })
     req.body._id = parseInt(req.body._id);
 })
+
+function checkLogin(req, res, next){
+    if(req.user){
+        next()
+    } else {
+        req.send("You did not login");
+    }
+}
