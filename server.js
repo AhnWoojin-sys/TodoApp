@@ -6,13 +6,16 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
 
-MongoClient.connect("mongodb+srv://Ahnwoojin-sys:SwEZHk1TKnlCkWWI@cluster0.wybep.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", 
+require('dotenv').config();
+
+
+MongoClient.connect(process.env.DB_URL, 
     function(error, client){
         if(error)return console.log(error);
 
         db = client.db('todoapp');
 
-        app.listen('8080', function(){
+        app.listen(process.env.port, function(){
             console.log('listening on 8080');
     });
 })
@@ -84,8 +87,9 @@ app.post('/login', passport.authenticate('local', {
     res.redirect('/');
 })
 
-app.get('/mypage', checkLogin,(req, res)=>{
-    res.render('mypage.ejs');
+app.get('/mypage', checkLogin, (req, res)=>{
+    console.log(req.user);
+    res.render('mypage.ejs', {data : req.user});
 })
 
 passport.use(new LocalStrategy({
@@ -111,8 +115,10 @@ passport.serializeUser((user, done)=>{
     done(null, user.id);
 });
 
-passport.deserializeUser((user, done)=>{
-    done(null, {});
+passport.deserializeUser((id, done)=>{
+    db.collection('login').findOne({id : id}, function(error, result){
+        done(null, result);
+    })
 });
 
 app.delete('/delete', (req, res)=>{
@@ -139,6 +145,6 @@ function checkLogin(req, res, next){
     if(req.user){
         next()
     } else {
-        req.send("You did not login");
+        res.redirect('/login');
     }
 }
