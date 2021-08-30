@@ -5,6 +5,7 @@ const methodOverride = require('method-override');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
+const CrptoJS = require('crypto-js');
 
 MongoClient.connect("mongodb+srv://Ahnwoojin-sys:SwEZHk1TKnlCkWWI@cluster0.wybep.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", 
     function(error, client){
@@ -82,6 +83,32 @@ app.post('/login', passport.authenticate('local', {
     failureRedirect : '/fail'
 }), (req, res)=>{
     res.redirect('/');
+})
+
+app.get('/register', (req, res)=>{
+    res.render('register.ejs');
+})
+
+app.post('/register', (req, res, next)=>{
+    if(req.body.pw == req.body.confirmPassword){
+        db.collection('login').findOne({id : req.body.id})
+        .then(result => {
+            if(result === undefined) {
+                db.collection('login').insertOne({
+                    firstName : req.body.firstName,
+                    lastName : req.body.lastName,
+                    email : req.body.email,
+                    id : req.body.id,
+                    password : req.body.pw
+                    },(error, result)=>{
+                        res.redirect('/login');
+                })
+            }
+            else {
+                res.redirect('/register');
+            }
+        })
+    }
 })
 
 app.get('/mypage', checkLogin,(req, res)=>{
