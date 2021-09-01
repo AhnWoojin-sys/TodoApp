@@ -34,7 +34,7 @@
                 <p>Todo Finish Date : <%=posts[i].date %></p>
                 <a href="/detail/<%=posts[i]._id%>" class="btn btn-primary" role="button">Detail</a>
                 <a href="/edit/<%=posts[i]._id%>" class="btn btn-secondary" role="button">Edit</a>
-                <button type="button" id="delete" data-id="<%= posts[i]._id%>" class="btn btn-danger delete">Remove</button>
+                <button type="button" class="delete" data-id="<%= posts[i]._id%>" class="btn btn-danger">Remove</button>
             </li>
             <% } %>
         </ul>

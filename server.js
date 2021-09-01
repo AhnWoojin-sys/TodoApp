@@ -5,7 +5,7 @@ const methodOverride = require('method-override');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
-const CrptoJS = require('crypto-js');
+const CryptoJS = require('crypto-js');
 
 MongoClient.connect("mongodb+srv://Ahnwoojin-sys:SwEZHk1TKnlCkWWI@cluster0.wybep.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", 
     function(error, client){
@@ -17,8 +17,6 @@ MongoClient.connect("mongodb+srv://Ahnwoojin-sys:SwEZHk1TKnlCkWWI@cluster0.wybep
             console.log('listening on 8080');
     });
 })
-
-var db;
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -93,6 +91,7 @@ app.post('/register', (req, res, next)=>{
     if(req.body.pw == req.body.confirmPassword){
         db.collection('login').findOne({id : req.body.id})
         .then(result => {
+            // db에 아이디 있는지 확인
             if(result === undefined) {
                 db.collection('login').insertOne({
                     firstName : req.body.firstName,
@@ -160,6 +159,15 @@ app.put('/edit', (req, res)=>{
         res.redirect('/list');
     })
     req.body._id = parseInt(req.body._id);
+})
+
+app.get('/search', (req, res)=>{
+    db.collection('post').find({todo:req.query.value}).toArray((error, result)=>{
+        console.log(result);
+        if(error)console.log(error);
+    });
+    console.log(req.query);
+    res.send(req.send);
 })
 
 function checkLogin(req, res, next){
