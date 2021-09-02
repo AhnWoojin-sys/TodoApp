@@ -5,6 +5,7 @@ const methodOverride = require('method-override');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
+const CrptoJS = require('crypto-js');
 
 require('dotenv').config();
 
@@ -87,9 +88,34 @@ app.post('/login', passport.authenticate('local', {
     res.redirect('/');
 })
 
-app.get('/mypage', checkLogin, (req, res)=>{
-    console.log(req.user);
-    res.render('mypage.ejs', {data : req.user});
+app.get('/register', (req, res)=>{
+    res.render('register.ejs');
+})
+
+app.post('/register', (req, res, next)=>{
+    if(req.body.pw == req.body.confirmPassword){
+        db.collection('login').findOne({id : req.body.id})
+        .then(result => {
+            if(result === undefined) {
+                db.collection('login').insertOne({
+                    firstName : req.body.firstName,
+                    lastName : req.body.lastName,
+                    email : req.body.email,
+                    id : req.body.id,
+                    password : req.body.pw
+                    },(error, result)=>{
+                        res.redirect('/login');
+                })
+            }
+            else {
+                res.redirect('/register');
+            }
+        })
+    }
+})
+
+app.get('/mypage', checkLogin,(req, res)=>{
+    res.render('mypage.ejs');
 })
 
 passport.use(new LocalStrategy({
