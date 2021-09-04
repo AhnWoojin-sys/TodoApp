@@ -5,7 +5,7 @@ const methodOverride = require('method-override');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
-const CrptoJS = require('crypto-js');
+const CryptoJS = require('crypto-js');
 
 require('dotenv').config();
 
@@ -21,8 +21,6 @@ MongoClient.connect(process.env.DB_URL,
     });
 })
 
-var db;
-
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.set('view engine', 'ejs');
@@ -32,19 +30,34 @@ app.use(session({secret: 'secretCode', resave: true, saveUninitialized: false}))
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use( '/', express.static( path.join(__dirname), 'public'));
+app.use( 'react', express.static(path.join(__dirname, 'react-project/build')));
+
+// 메인 화면 GET
 app.get('/', (req, res)=>{
     res.render('index.ejs');
 })
 
+// 글 작성 GET
 app.get('/write', (req, res)=>{
     res.render('write.ejs');
 })
 
+// 글 list GET
 app.get('/list', (req, res)=>{
     db.collection('post').find().toArray(function(error, result){
         res.render('list.ejs', { posts : result })
     })
+})
 
+// Search list GET
+app.get('/search', (req, res)=>{
+    db.collection('post').find({todo:req.query.value}).toArray((error, result)=>{
+        console.log(result);
+        if(error)console.log(error);
+        res.render('search.ejs');
+    });
+    res.send(req.send);
 })
 
 app.get('/detail/:id', (req, res)=>{
@@ -78,6 +91,16 @@ app.post('/add', (req, res)=>{
     });
 })
 
+app.use( express.static ( path.join(__dirname, 'react-todo/build')))
+
+app.get('/', (req, res)=>{
+    res.sendFile( path.join(__dirname, 'public.main.html'));
+})
+
+app.get('*', (req, res)=>{
+    res.sendFile( path.join(__dirname, 'react-project/build/index.html'))
+})
+
 app.get('/login', (req, res)=>{
     res.render('login.ejs');
 })
@@ -96,6 +119,7 @@ app.post('/register', (req, res, next)=>{
     if(req.body.pw == req.body.confirmPassword){
         db.collection('login').findOne({id : req.body.id})
         .then(result => {
+            // db에 아이디 있는지 확인
             if(result === undefined) {
                 db.collection('login').insertOne({
                     firstName : req.body.firstName,
